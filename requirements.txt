@@ -1,0 +1,25 @@
+# --- Core Framework ---
+fastapi==0.111.0
+uvicorn[standard]==0.30.0
+pydantic-settings==2.3.0
+python-dotenv==1.0.1
+
+# --- Multi-Agent Orchestration (LangChain/LangGraph) ---
+langgraph==1.1.6
+langchain==0.4.5
+langchain-google-genai==2.1.0
+google-generativeai==0.8.0
+
+# --- Agent Persistence (Memory) ---
+# This allows the "Judge" to pass feedback back to the "Writer"
+langgraph-checkpoint-redis==1.0.2
+redis==5.0.4
+
+# --- GitHub Integration ---
+# PyGithub is the standard for interacting with the GitHub API
+PyGithub==2.3.0
+cryptography==42.0.5  # Required for GitHub App authentication
+
+# --- Utilities ---
+httpx==0.27.0
+loguru==0.7.2

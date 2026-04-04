@@ -1,0 +1,28 @@
+# --- AI & Environment Secrets ---
+.env
+*.pem
+secrets/
+keys/
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+build/
+dist/
+
+# --- Docker ---
+.dockerignore
+
+# --- Redis/Persistence ---
+dump.rdb
+appendonly.aof
+
+# --- IDEs & OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
