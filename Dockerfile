@@ -14,7 +14,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=ghcr.io/astral-sh/uv:latest /uv /bin/uv
 
 # Copy dependency files
-COPY pyproject.toml . 
+# COPY pyproject.toml . 
 COPY requirements.txt .
 
 # Install dependencies into a virtual environment
@@ -35,7 +35,6 @@ ENV PATH="/opt/venv/bin:$PATH"
 COPY ./agents ./agents
 COPY ./tools ./tools
 COPY ./api ./api
-COPY main.py .
 
 # Expose FastAPI port
 EXPOSE 8000
