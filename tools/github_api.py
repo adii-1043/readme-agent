@@ -53,7 +53,9 @@ class GitHubManager:
         messages = [commit.commit.message for commit in comparison.commits]
 
         relevant_files = []
+        all_changed_paths = []
         for file in comparison.files:
+            all_changed_paths.append(file.filename)
             if file.filename.endswith((
                 '.py', '.pyi', '.js', '.jsx', '.ts', '.tsx', '.go', '.java', '.kt',
                 '.rb', '.php', '.rs', '.c', '.cc', '.cpp', '.h', '.hpp', '.cs',
@@ -68,6 +70,7 @@ class GitHubManager:
                 })
         return {
             "files": relevant_files,
+            "all_changed_paths": all_changed_paths,
             "commit_summary": messages,
             "total_changes": comparison.total_commits
         }
@@ -85,7 +88,10 @@ class GitHubManager:
 
         try:
             # If ref is None, PyGithub defaults to the repo's default branch
-            content_file = repo.get_contents("README.md", ref=ref)
+            if ref:
+                content_file = repo.get_contents("README.md", ref=ref)
+            else:
+                content_file = repo.get_contents("README.md")
             return {
                 "content": content_file.decoded_content.decode("utf-8"),
                 "sha": content_file.sha,
@@ -100,20 +106,37 @@ class GitHubManager:
         """Fetches and decodes the full content of a single file."""
         gh = self.get_installation_client(installation_id)
         repo = gh.get_repo(repo_name)
-        content_file = repo.get_contents(file_path, ref=ref)
+
+        if ref:
+            content_file = repo.get_contents(file_path, ref=ref)
+        else:
+            content_file = repo.get_contents(file_path)
+            
         return content_file.decoded_content.decode("utf-8")
     # --- WRITE ---
-    def update_readme_on_branch(self, installation_id: int, repo_name: str, content: str, sha: str):
-        """Pushes the new README content to the 'ai-readme-update' branch."""
+    def update_readme_on_branch(self, installation_id: int, repo_name: str, content: str, sha: str | None):
+        """
+        Pushes the new README content to the 'ai-readme-update' branch.
+
+        If sha is None/empty (README does not exist on that branch), this will create it.
+        """
         gh = self.get_installation_client(installation_id)
         repo = gh.get_repo(repo_name)
-        
-        return repo.update_file(
+
+        if sha:
+            return repo.update_file(
+                path="README.md",
+                message="🤖 AI: Update README documentation",
+                content=content,
+                sha=sha,
+                branch="ai-readme-update",
+            )
+
+        return repo.create_file(
             path="README.md",
-            message="🤖 AI: Update README documentation",
+            message="AI: Add README documentation",
             content=content,
-            sha=sha,
-            branch="ai-readme-update"
+            branch="ai-readme-update",
         )
 
     def create_pull_request(self, installation_id: int, repo_name: str, title: str, body: str):
